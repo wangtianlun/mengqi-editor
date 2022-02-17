@@ -1,5 +1,4 @@
-import { useContext, useEffect } from 'react';
-import EditorContext from '../components/EditorContext';
+import { useEffect } from 'react';
 import { EditorAction } from './useAction';
 import type { EditorDispatchFunc } from './useAction';
 
@@ -7,16 +6,15 @@ let uuid = 0;
 
 export default function useDragAndDropEvent(dispatch: EditorDispatchFunc) {
   useEffect(() => {
-    let dragged: EventTarget | null;
+    let dragged: HTMLElement;
 
     document.addEventListener('drag', function () {}, false);
   
     document.addEventListener(
       'dragstart',
       function (event) {
-        dragged = event.target;
-        (event.target! as Element).style.opacity = 0.5;
-        
+        dragged = event.target as HTMLElement;
+        (event.target! as HTMLElement).style.opacity = '0.5';
       },
       false,
     );
@@ -25,7 +23,7 @@ export default function useDragAndDropEvent(dispatch: EditorDispatchFunc) {
       'dragend',
       function (event) {
         // 重置透明度
-        event.target.style.opacity = '';
+        (event.target! as HTMLElement).style.opacity = '';
       },
       false,
     );
@@ -44,7 +42,7 @@ export default function useDragAndDropEvent(dispatch: EditorDispatchFunc) {
       'dragenter',
       function (event) {
         // 当可拖动的元素进入可放置的目标时高亮目标节点
-        if (event.target.className == 'canvas-container') {
+        if ((event.target! as HTMLElement).className == 'canvas-container') {
           // event.target.style.background = 'purple';
         }
       },
@@ -55,8 +53,8 @@ export default function useDragAndDropEvent(dispatch: EditorDispatchFunc) {
       'dragleave',
       function (event) {
         // 当拖动元素离开可放置目标节点，重置其背景
-        if (event.target.className == 'canvas-container') {
-          event.target.style.background = '';
+        if ((event.target! as HTMLElement).className == 'canvas-container') {
+          (event.target! as HTMLElement).style.background = '';
         }
       },
       false,
@@ -68,7 +66,7 @@ export default function useDragAndDropEvent(dispatch: EditorDispatchFunc) {
         // 阻止默认动作（如打开一些元素的链接）
         event.preventDefault();
         // 将拖动的元素到所选择的放置目标节点中
-        if (event.target!.className == 'canvas-container') {
+        if ((event.target! as HTMLElement).className == 'canvas-container') {
           dragged.style.opacity = '1';
           const componentName = dragged.getAttribute('data-component');
           dispatch({
